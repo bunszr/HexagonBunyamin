@@ -41,10 +41,10 @@ public class GridManager : MonoBehaviour
     
     public void CreateMap()
     {
-// #if UNITY_EDITOR
-//         foreach (Transform child in transform)
-//             StartCoroutine(Destroy(child.gameObject));
-// #endif
+#if UNITY_EDITOR
+        foreach (Transform child in transform)
+            StartCoroutine(Destroy(child.gameObject));
+#endif
         List<AbstractHexagon> tempAbstractHexagons = new List<AbstractHexagon>();
 
         float startPosX = ((width - 1) * 2f * HexInfo.outerRadius * .75f) / -2f;
@@ -62,7 +62,7 @@ public class GridManager : MonoBehaviour
                 AbstractHexagon abshexagon = Instantiate(hexagonPrefab).GetComponent<AbstractHexagon>();
                 abshexagon.transform.position = position;
                 abshexagon.transform.SetParent(transform);
-                abshexagon.transform.localScale = Vector3.zero;
+                abshexagon.transform.localScale = Vector2.one * hexagonScale;
                 tempAbstractHexagons.Add(abshexagon);
                 abshexagon.name = "Hexagon " + (tempAbstractHexagons.Count - 1);
                 abshexagon.Register(machine);
@@ -75,8 +75,9 @@ public class GridManager : MonoBehaviour
         boundsMap.size = new Vector2(-startPosX, -startPosY) * 2f;
         boundsMap.Expand(.6f);
         Camera.main.orthographicSize = (boundsMap.size.x + .8f) / (2f * Camera.main.aspect);
-
+#if UNITY_ANDROID
         StartCoroutine(MakeGridAnim(tempAbstractHexagons.ToArray()));
+#endif
     }
 
     IEnumerator MakeGridAnim(AbstractHexagon[] allAbstractHexagons)
